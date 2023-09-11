@@ -3,3 +3,64 @@
   padding: 0;
   text-decoration: none;
 }
+
+.wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.wrapper-content {
+  display: flex;
+  justify-content: space-between;
+  width: 700px;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+.buttons-wrapper {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin: 10px 0;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid grey;
+}
+
+th {
+  min-width: 100px;
+  border: 1px solid grey;
+  text-align: left;
+  padding: 5px;
+  background-color: rgb(61, 121, 233);
+  color: white;
+}
+
+th:first-child {
+  min-width: 20px;
+}
+
+td {
+  border: 1px solid grey;
+  padding: 5px;
+}
+
+input {
+  padding: 5px;
+  margin: 5px 0;
+}
+
+input:first-child {
+  margin: 0 0 5px;
+}
+
+button {
+  width: 70px;
+}
