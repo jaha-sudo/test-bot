@@ -176,7 +176,7 @@ function PostGetDeleteCategory() {
             <thead>
               <tr>
                 <th>id</th>
-                <th>Name</th>
+                <th>Category Name</th>
                 <th>Actions</th>
               </tr>
             </thead>

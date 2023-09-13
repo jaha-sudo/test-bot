@@ -21,7 +21,7 @@ function Header() {
             <Link to="/post-get-delete-category">Post/Get/Delete Category</Link>
           </li>
           <li>
-            <Link to="/post-get-delete-products">Post/Get/Delete Products</Link>
+            <Link to="/post-products">Post Products</Link>
           </li>
         </ul>
       </nav>
