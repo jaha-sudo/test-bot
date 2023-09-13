@@ -60,7 +60,7 @@ const deleteCategory = async (categoryId) => {
   }
 };
 
-function Home() {
+function PostGetDeleteCategory() {
   const [categoryData, setCategoryData] = useState({
     categoryName: "",
   });
@@ -104,14 +104,6 @@ function Home() {
     }
   };
 
-  // const handleRemoveClick = async (index) => {
-  //   const categoryId = categorys[index].id;
-  //   await deleteCategory(categoryId);
-  //   setCategorys((prevCategorys) =>
-  //     prevCategorys.filter((_, categoryIndex) => categoryIndex !== index)
-  //   );
-  // };
-
   const handleRemoveClick = async (index) => {
     try {
       const categoryId = categorys[index].uuid;
@@ -119,7 +111,6 @@ function Home() {
         console.error("Category ID is undefined or null.");
         return;
       }
-      // console.log(categoryId);
       await deleteCategory(categoryId);
 
       setCategorys((prevCategorys) =>
@@ -231,4 +222,4 @@ function Home() {
   );
 }
 
-export default Home;
+export default PostGetDeleteCategory;

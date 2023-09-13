@@ -5,7 +5,7 @@ const initialValues = {
   userSurname: "",
   userSalary: "",
 };
-function Apps() {
+function Template() {
   const [userData, setUserData] = useState(initialValues);
 
   const [users, setUsers] = useState([]);
@@ -139,4 +139,4 @@ function Apps() {
   );
 }
 
-export default Apps;
+export default Template;

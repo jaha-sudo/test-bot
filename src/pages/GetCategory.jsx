@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-function FAQ() {
+function GetCategory() {
   // Состояние, в котором будут храниться полученные данные
   const [categorys, setCategorys] = useState([]);
 
@@ -34,4 +34,4 @@ function FAQ() {
   );
 }
 
-export default FAQ;
+export default GetCategory;

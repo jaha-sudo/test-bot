@@ -57,7 +57,7 @@ const deleteCategory = async (categoryId) => {
   }
 };
 
-function Home() {
+function PostCategory() {
   const [categoryData, setCategoryData] = useState({
     categoryName: "",
   });
@@ -207,4 +207,4 @@ function Home() {
   );
 }
 
-export default Home;
+export default PostCategory;
