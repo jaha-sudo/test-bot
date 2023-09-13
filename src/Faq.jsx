@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 function FAQ() {
   // Состояние, в котором будут храниться полученные данные
-  const [data, setData] = useState([]);
+  const [categorys, setCategorys] = useState([]);
 
   useEffect(() => {
     fetch("http://192.168.77.91:9000/admin/categories")
@@ -10,7 +10,7 @@ function FAQ() {
       .then((responseData) => {
         // Проверяем, что ответ содержит данные и устанавливаем их в состояние
         if (responseData && responseData.data) {
-          setData(responseData.data);
+          setCategorys(responseData.data);
         } else {
           console.error("Ошибка: Неверный формат данных");
         }
@@ -22,11 +22,11 @@ function FAQ() {
     <div>
       <h1>Список категорий</h1>
       <ul>
-        {data.map((category) => (
+        {categorys.map((category) => (
           <li key={category.uuid}>
             <strong>UUID:</strong> {category.uuid}
             <br />
-            <strong>Название:</strong> {category.name}
+            <strong>Название:</strong> {category.categoryName}
           </li>
         ))}
       </ul>
