@@ -26,6 +26,9 @@ function Header() {
           <li>
             <Link to="/get-products">Get Products</Link>
           </li>
+          <li>
+            <Link to="/post-get-products">Post Get Products</Link>
+          </li>
         </ul>
       </nav>
     </div>
