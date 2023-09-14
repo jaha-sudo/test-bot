@@ -6,6 +6,7 @@ import Template from "./pages/Template";
 import PostCategory from "./pages/PostCategory";
 import Sign from "./pages/Sign";
 import AddProducts from "./pages/AddProducts";
+import ProductTable from "./pages/ProductTable";
 
 function App() {
   return (
@@ -20,10 +21,8 @@ function App() {
             path="post-get-delete-category"
             element={<PostGetDeleteCategory />}
           />
-          <Route
-            path="post-products"
-            element={<AddProducts />}
-          />
+          <Route path="post-products" element={<AddProducts />} />
+          <Route path="get-products" element={<ProductTable />} />
         </Route>
       </Routes>
     </BrowserRouter>
