@@ -36,21 +36,6 @@ const updateCategory = async (formData, categoryId) => {
   }
 };
 
-const deleteCategory = async (categoryId) => {
-  try {
-    const response = await fetch(`${apiUrl}/${categoryId}`, {
-      method: "DELETE",
-    });
-    if (!response.ok) {
-      throw new Error("Error deleting category");
-    }
-    console.log("Category deleted successfully.");
-  } catch (error) {
-    console.error("Error deleting category:", error);
-    throw error;
-  }
-};
-
 function PostCategory() {
   const [categoryData, setCategoryData] = useState({
     name: "",
@@ -64,6 +49,8 @@ function PostCategory() {
     isEdit: false,
     categoryIndex: null,
   });
+
+  const [operationSuccess, setOperationSuccess] = useState(null); // Состояние для уведомления
 
   useEffect(() => {
     fetchCategories();
@@ -80,14 +67,6 @@ function PostCategory() {
     } catch (error) {
       console.error("Error fetching categories:", error);
     }
-  };
-
-  const handleRemoveClick = async (index) => {
-    const categoryId = categorys[index].id;
-    await deleteCategory(categoryId);
-    setCategorys((prevCategories) =>
-      prevCategories.filter((_, categoryIndex) => categoryIndex !== index)
-    );
   };
 
   const isFilledFields = categoryData.name;
@@ -128,8 +107,13 @@ function PostCategory() {
         });
 
         setImageFile(null);
+
+        // Показать уведомление об успешном обновлении
+        setOperationSuccess("Updated successfully");
       } catch (error) {
         console.error("Error updating category:", error);
+        // Показать уведомление об ошибке
+        setOperationSuccess("Update failed");
       }
     } else {
       try {
@@ -139,18 +123,20 @@ function PostCategory() {
           name: "",
         });
         setImageFile(null);
+
+        // Показать уведомление об успешном создании
+        setOperationSuccess("Created successfully");
       } catch (error) {
         console.error("Error creating category:", error);
+        // Показать уведомление об ошибке
+        setOperationSuccess("Creation failed");
       }
     }
-  };
 
-  const handleEditClick = (data, index) => {
-    setCategoryData(data);
-    setEditableCategoryData({
-      isEdit: true,
-      categoryIndex: index,
-    });
+    // Очистить уведомление через некоторое время
+    setTimeout(() => {
+      setOperationSuccess(null);
+    }, 5000); // Например, скрываем уведомление через 5 секунд
   };
 
   const handleCleanClick = () => {
@@ -164,45 +150,8 @@ function PostCategory() {
   };
 
   return (
-    <div className="wrapper">
+    <div className="wrapper" style={{ marginTop: "2rem" }}>
       <div className="wrapper-content">
-        <div>
-          <table>
-            <thead>
-              <tr>
-                <th>id</th>
-                <th>Name</th>
-                <th>Image</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {categorys.map((category, index) => (
-                <tr key={category.id}>
-                  <td>{index + 1}</td>
-                  <td>{category.name}</td>
-                  <td>
-                    {category.imageUrl && (
-                      <img
-                        src={`http://192.168.77.91:9000/${category.imageUrl}`}
-                        alt={category.name}
-                        style={{ maxWidth: "100px", maxHeight: "100px" }}
-                      />
-                    )}
-                  </td>
-                  <td>
-                    <button onClick={() => handleEditClick(category, index)}>
-                      Edit
-                    </button>
-                    <button onClick={() => handleRemoveClick(index)}>
-                      Remove
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
         <div>
           <form onSubmit={handleSubmitCategory} onReset={handleCleanClick}>
             <input
@@ -215,11 +164,7 @@ function PostCategory() {
                 })
               }
             />
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleImageChange}
-            />
+            <input type="file" accept="image/*" onChange={handleImageChange} />
             <div className="buttons-wrapper">
               <button type="reset">
                 {editableCategoryData.isEdit ? "Cancel" : "Clean"}
@@ -229,6 +174,17 @@ function PostCategory() {
               </button>
             </div>
           </form>
+          {operationSuccess && (
+            <div
+              className={`alert ${
+                operationSuccess === "Created successfully"
+                  ? "alert-success"
+                  : "alert-danger"
+              }`}
+            >
+              {operationSuccess}
+            </div>
+          )}
         </div>
       </div>
     </div>

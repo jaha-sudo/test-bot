@@ -20,7 +20,7 @@ function GetCategory() {
   }, []);
 
   return (
-    <div style={{maxWidth:'600px', margin:'2rem auto'}}>
+    <div style={{ maxWidth: '600px', margin: '2rem auto' }}>
       <Typography variant="h4">Список категорий</Typography>
       <List>
         {categorys.map((category) => (
@@ -28,6 +28,11 @@ function GetCategory() {
             <ListItemText
               primary={`UUID: ${category.uuid}`}
               secondary={`Название: ${category.categoryName}`}
+            />
+            <img
+              src={`http://192.168.77.91:9000/images/categories/${category.image}`}
+              alt={category.categoryName}
+              style={{ maxWidth: "100px", maxHeight: "100px" }}
             />
           </ListItem>
         ))}
