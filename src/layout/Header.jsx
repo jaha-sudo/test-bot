@@ -1,4 +1,11 @@
-import { AppBar, Toolbar, Typography, IconButton } from "@mui/material";
+import {
+  Drawer,
+  IconButton,
+  List,
+  ListItem,
+  ListItemText,
+  Typography,
+} from "@mui/material";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import { Link } from "react-router-dom";
 
@@ -12,31 +19,22 @@ function Header() {
     { href: "get-products", linkName: "Get Product" },
     { href: "post-get-products", linkName: "Post/get/delete product" },
   ];
+
   return (
-    <AppBar position="static" sx={{mb:10}}>
-      <Toolbar>
-        <Typography variant="h6">Dashboard</Typography>
-        <ul
-          style={{
-            listStyle: "none",
-            display: "flex",
-            justifyContent: "space-between",
-            width: "80%",
-          }}
-        >
-          {links.map((link, index) => (
-            <li key={index} style={{ flex: "1", textAlign: "center" }}>
-              <Link style={{ color: "#fff" }} to={link.href}>
-                {link.linkName}
-              </Link>
-            </li>
-          ))}
-        </ul>
-        <IconButton sx={{ ml: "auto", color: "#fff" }}>
-          <LockOutlinedIcon />
+    <Drawer variant="permanent">
+      <List>
+        {links.map((link, index) => (
+          <ListItem button key={index} component={Link} to={link.href}>
+            <ListItemText primary={link.linkName} />
+          </ListItem>
+        ))}
+      </List>
+      <div style={{ margin: "0 auto" }}>
+        <IconButton color="inherit" component={Link} to="/">
+          <LockOutlinedIcon /> <Typography>Log Out</Typography>
         </IconButton>
-      </Toolbar>
-    </AppBar>
+      </div>
+    </Drawer>
   );
 }
 

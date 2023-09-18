@@ -1,6 +1,5 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Template from "./pages/Template";
-import SignUp from "./pages/sign-up/SignUp";
 import SignIn from "./pages/SignIn";
 import Layout from "./layout/Layout";
 import GetCategory from "./pages/GetCategory";
@@ -15,8 +14,6 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<SignIn />} />
-        {/* <Route path="template" element={<Template />} /> */}
-        {/* <Route path="sign-up" element={<SignUp />} /> */}
         <Route path="layout" element={<Layout />}>
           <Route path="post-category" element={<PostCategory />} />
           <Route path="get-category" element={<GetCategory />} />

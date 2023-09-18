@@ -29,7 +29,7 @@ export default function SignIn() {
     if (username === "selbi" && password === "12345") {
       setShowCongrats(true);
       console.log("congrats");
-      history("/layout");
+      history("/layout/post-get-products");
     } else {
       // Если имя пользователя и пароль не совпадают, вы можете вывести сообщение об ошибке
       alert("Invalid username or password. Please try again.");
