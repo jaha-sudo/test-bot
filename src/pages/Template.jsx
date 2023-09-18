@@ -5,11 +5,10 @@ const initialValues = {
   userSurname: "",
   userSalary: "",
 };
+
 function Template() {
   const [userData, setUserData] = useState(initialValues);
-
   const [users, setUsers] = useState([]);
-
   const [editableUserData, setEditableUserData] = useState({
     isEdit: false,
     userIndex: null,
@@ -49,8 +48,6 @@ function Template() {
   };
 
   const handleCleanClick = () => setUserData(initialValues);
-
-  console.log(users);
 
   return (
     <div className="wrapper">
@@ -92,7 +89,7 @@ function Template() {
           <form onSubmit={handleSubmitUser} onReset={handleCleanClick}>
             <input
               type="text"
-              placeholder="Enter ur Name"
+              placeholder="Enter your Name"
               value={userData.userName}
               onChange={(e) =>
                 setUserData((prevState) => ({
@@ -103,7 +100,7 @@ function Template() {
             />
             <input
               type="text"
-              placeholder="Enter ur Surname"
+              placeholder="Enter your Surname"
               value={userData.userSurname}
               onChange={(e) =>
                 setUserData((prevState) => ({
@@ -114,7 +111,7 @@ function Template() {
             />
             <input
               type="number"
-              placeholder="Enter ur Salary"
+              placeholder="Enter your Salary"
               value={userData.userSalary}
               onChange={(e) =>
                 setUserData((prevState) => ({
@@ -125,7 +122,6 @@ function Template() {
             />
             <div className="buttons-wrapper">
               <button type="reset">
-                {" "}
                 {editableUserData.isEdit ? "Cancel" : "Clean"}
               </button>
               <button type="submit" disabled={!isFilledFields}>

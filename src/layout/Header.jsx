@@ -1,37 +1,42 @@
+import { AppBar, Toolbar, Typography, IconButton } from "@mui/material";
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import { Link } from "react-router-dom";
 
 function Header() {
+  const links = [
+    { href: "template", linkName: "Template" },
+    { href: "post-category", linkName: "Add category" },
+    { href: "get-category", linkName: "Get category" },
+    { href: "post-get-delete-category", linkName: "Post/get/delete category" },
+    { href: "post-products", linkName: "Add Product" },
+    { href: "get-products", linkName: "Get Product" },
+    { href: "post-get-products", linkName: "Post/get/delete product" },
+  ];
   return (
-    <div>
-      <nav>
-        <ul>
-        <li>
-            <Link to="/">Sign Page</Link>
-          </li>
-          <li>
-            <Link to="/post-category">Post category</Link>
-          </li>
-          <li>
-            <Link to="/get-category">Get category</Link>
-          </li>
-          <li>
-            <Link to="/template">Template</Link>
-          </li>
-          <li>
-            <Link to="/post-get-delete-category">Post/Get/Delete Category</Link>
-          </li>
-          <li>
-            <Link to="/post-products">Post Products</Link>
-          </li>
-          <li>
-            <Link to="/get-products">Get Products</Link>
-          </li>
-          <li>
-            <Link to="/post-get-products">Post Get Products</Link>
-          </li>
+    <AppBar position="static" sx={{mb:10}}>
+      <Toolbar>
+        <Typography variant="h6">Dashboard</Typography>
+        <ul
+          style={{
+            listStyle: "none",
+            display: "flex",
+            justifyContent: "space-between",
+            width: "80%",
+          }}
+        >
+          {links.map((link, index) => (
+            <li key={index} style={{ flex: "1", textAlign: "center" }}>
+              <Link style={{ color: "#fff" }} to={link.href}>
+                {link.linkName}
+              </Link>
+            </li>
+          ))}
         </ul>
-      </nav>
-    </div>
+        <IconButton sx={{ ml: "auto", color: "#fff" }}>
+          <LockOutlinedIcon />
+        </IconButton>
+      </Toolbar>
+    </AppBar>
   );
 }
 
