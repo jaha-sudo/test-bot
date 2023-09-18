@@ -16,7 +16,7 @@ function App() {
       <Routes>
         <Route path="/" element={<SignIn />} />
         {/* <Route path="template" element={<Template />} /> */}
-        <Route path="sign-up" element={<SignUp />} />
+        {/* <Route path="sign-up" element={<SignUp />} /> */}
         <Route path="layout" element={<Layout />}>
           <Route path="post-category" element={<PostCategory />} />
           <Route path="get-category" element={<GetCategory />} />
