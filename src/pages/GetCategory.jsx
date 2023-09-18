@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Typography, List, ListItem, ListItemText } from "@mui/material";
 
 function GetCategory() {
   // Состояние, в котором будут храниться полученные данные
@@ -19,17 +20,18 @@ function GetCategory() {
   }, []);
 
   return (
-    <div>
-      <h1>Список категорий</h1>
-      <ul>
+    <div style={{maxWidth:'600px', margin:'2rem auto'}}>
+      <Typography variant="h4">Список категорий</Typography>
+      <List>
         {categorys.map((category) => (
-          <li key={category.uuid}>
-            <strong>UUID:</strong> {category.uuid}
-            <br />
-            <strong>Название:</strong> {category.categoryName}
-          </li>
+          <ListItem key={category.uuid}>
+            <ListItemText
+              primary={`UUID: ${category.uuid}`}
+              secondary={`Название: ${category.categoryName}`}
+            />
+          </ListItem>
         ))}
-      </ul>
+      </List>
     </div>
   );
 }
