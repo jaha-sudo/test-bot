@@ -1,3 +1,4 @@
+import { Box } from "@mui/material";
 import { useState, useEffect } from "react";
 
 const productsApiUrl =
@@ -50,7 +51,7 @@ function ProductTable() {
   };
 
   return (
-    <div>
+    <Box sx={{ml:'20%'}}>
       <h2>Список продуктов</h2>
       <table>
         <thead>
@@ -84,7 +85,7 @@ function ProductTable() {
           ))}
         </tbody>
       </table>
-    </div>
+    </Box>
   );
 }
 

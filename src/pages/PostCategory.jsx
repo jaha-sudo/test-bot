@@ -1,15 +1,12 @@
 import { useState, useEffect } from "react";
 
-const apiUrl = "http://192.168.77.91:9000/admin/create/category/"; // Replace with your backend API URL
+const apiUrl = "http://192.168.77.91:9000/admin/create/category/";
 
-const createCategory = async (category) => {
+const createCategory = async (formData) => {
   try {
     const response = await fetch(apiUrl, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(category),
+      body: formData,
     });
     if (!response.ok) {
       throw new Error("Error creating category");
@@ -22,14 +19,11 @@ const createCategory = async (category) => {
   }
 };
 
-const updateCategory = async (category) => {
+const updateCategory = async (formData, categoryId) => {
   try {
-    const response = await fetch(`${apiUrl}/${category.id}`, {
+    const response = await fetch(`${apiUrl}/${categoryId}`, {
       method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(category),
+      body: formData,
     });
     if (!response.ok) {
       throw new Error("Error updating category");
@@ -59,20 +53,21 @@ const deleteCategory = async (categoryId) => {
 
 function PostCategory() {
   const [categoryData, setCategoryData] = useState({
-    categoryName: "",
+    name: "",
   });
+
+  const [imageFile, setImageFile] = useState(null);
 
   const [categorys, setCategorys] = useState([]);
 
-  const [editablecategoryData, setEditablecategoryData] = useState({
+  const [editableCategoryData, setEditableCategoryData] = useState({
     isEdit: false,
     categoryIndex: null,
   });
 
   useEffect(() => {
-    // Fetch categories when the component mounts
     fetchCategories();
-  }, []); // Empty dependency array to fetch data once on component mount
+  }, []);
 
   const fetchCategories = async () => {
     try {
@@ -81,7 +76,7 @@ function PostCategory() {
         throw new Error("Network response was not ok");
       }
       const data = await response.json();
-      setCategorys(data); // Set the fetched categories in the state
+      setCategorys(data);
     } catch (error) {
       console.error("Error fetching categories:", error);
     }
@@ -90,48 +85,60 @@ function PostCategory() {
   const handleRemoveClick = async (index) => {
     const categoryId = categorys[index].id;
     await deleteCategory(categoryId);
-    setCategorys((prevCategorys) =>
-      prevCategorys.filter((_, categoryIndex) => categoryIndex !== index)
+    setCategorys((prevCategories) =>
+      prevCategories.filter((_, categoryIndex) => categoryIndex !== index)
     );
   };
 
-  const isFilledFields = categoryData.categoryName;
+  const isFilledFields = categoryData.name;
 
-  const handleSubmitcategory = async (e) => {
+  const handleSubmitCategory = async (e) => {
     e.preventDefault();
     if (!isFilledFields) {
       console.error("Please fill in all fields.");
       return;
     }
 
-    if (editablecategoryData.isEdit) {
+    const formData = new FormData();
+    formData.append("name", categoryData.name);
+    if (imageFile) {
+      formData.append("image", imageFile);
+    }
+
+    if (editableCategoryData.isEdit) {
       try {
-        const updatedCategory = await updateCategory({
-          id: categorys[editablecategoryData.categoryIndex].id,
-          ...categoryData,
+        const updatedCategory = await updateCategory(
+          formData,
+          categorys[editableCategoryData.categoryIndex].id
+        );
+
+        setCategorys((prevCategories) => {
+          const newCategories = [...prevCategories];
+          newCategories[editableCategoryData.categoryIndex] = updatedCategory;
+          return newCategories;
         });
-        setCategorys((prevCategorys) => {
-          const newCategorys = [...prevCategorys];
-          newCategorys[editablecategoryData.categoryIndex] = updatedCategory;
-          return newCategorys;
-        });
-        setEditablecategoryData({
+
+        setEditableCategoryData({
           isEdit: false,
           categoryIndex: null,
         });
+
         setCategoryData({
-          categoryName: "",
+          name: "",
         });
+
+        setImageFile(null);
       } catch (error) {
         console.error("Error updating category:", error);
       }
     } else {
       try {
-        const createdCategory = await createCategory(categoryData);
-        setCategorys((prevCategorys) => [...prevCategorys, createdCategory]);
+        const createdCategory = await createCategory(formData);
+        setCategorys((prevCategories) => [...prevCategories, createdCategory]);
         setCategoryData({
-          categoryName: "",
+          name: "",
         });
+        setImageFile(null);
       } catch (error) {
         console.error("Error creating category:", error);
       }
@@ -140,15 +147,21 @@ function PostCategory() {
 
   const handleEditClick = (data, index) => {
     setCategoryData(data);
-    setEditablecategoryData({
+    setEditableCategoryData({
       isEdit: true,
       categoryIndex: index,
     });
   };
 
-  const handleCleanClick = () => setCategoryData({ categoryName: "" });
+  const handleCleanClick = () => {
+    setCategoryData({ name: "" });
+    setImageFile(null);
+  };
 
-  console.log(categorys);
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    setImageFile(file);
+  };
 
   return (
     <div className="wrapper">
@@ -159,6 +172,7 @@ function PostCategory() {
               <tr>
                 <th>id</th>
                 <th>Name</th>
+                <th>Image</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -166,7 +180,16 @@ function PostCategory() {
               {categorys.map((category, index) => (
                 <tr key={category.id}>
                   <td>{index + 1}</td>
-                  <td>{category.categoryName}</td>
+                  <td>{category.name}</td>
+                  <td>
+                    {category.imageUrl && (
+                      <img
+                        src={`http://192.168.77.91:9000/${category.imageUrl}`}
+                        alt={category.name}
+                        style={{ maxWidth: "100px", maxHeight: "100px" }}
+                      />
+                    )}
+                  </td>
                   <td>
                     <button onClick={() => handleEditClick(category, index)}>
                       Edit
@@ -181,23 +204,28 @@ function PostCategory() {
           </table>
         </div>
         <div>
-          <form onSubmit={handleSubmitcategory} onReset={handleCleanClick}>
+          <form onSubmit={handleSubmitCategory} onReset={handleCleanClick}>
             <input
               type="text"
               placeholder="Enter category name"
-              value={categoryData.categoryName}
+              value={categoryData.name}
               onChange={(e) =>
                 setCategoryData({
-                  categoryName: e.target.value,
+                  name: e.target.value,
                 })
               }
             />
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+            />
             <div className="buttons-wrapper">
               <button type="reset">
-                {editablecategoryData.isEdit ? "Cancel" : "Clean"}
+                {editableCategoryData.isEdit ? "Cancel" : "Clean"}
               </button>
               <button type="submit" disabled={!isFilledFields}>
-                {editablecategoryData.isEdit ? "Edit" : "Add"}
+                {editableCategoryData.isEdit ? "Edit" : "Add"}
               </button>
             </div>
           </form>

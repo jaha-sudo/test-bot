@@ -1,3 +1,4 @@
+import { Container } from "@mui/material";
 import { useState, useEffect } from "react";
 
 const productsApiUrl =
@@ -136,7 +137,7 @@ function PostGetProducts() {
   };
 
   return (
-    <div>
+    <Container>
       <div className="wrapper">
         <div className="wrapper-content">
           <div>
@@ -183,8 +184,8 @@ function PostGetProducts() {
           </div>
         </div>
       </div>
-      <h2>Список продуктов</h2>
-      <table>
+      <h2 style={{ marginLeft: "20%", marginTop:'2rem' }}>Список продуктов</h2>
+      <table style={{ marginLeft: "20%" }}>
         <thead>
           <tr>
             <th>ID</th>
@@ -216,7 +217,7 @@ function PostGetProducts() {
           ))}
         </tbody>
       </table>
-    </div>
+    </Container>
   );
 }
 
