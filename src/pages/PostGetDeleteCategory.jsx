@@ -1,15 +1,14 @@
 import { useState, useEffect } from "react";
 
-const apiUrl = "http://192.168.77.91:9000/admin/create/category/"; // Replace with your backend API URL
+const apiUrl = "http://192.168.77.91:9000/admin/create/category/";
+const categoryDelete = "http://192.168.77.91:9000/admin/category/delete/";
+const categoryUpdate = "http://192.168.77.91:9000/admin/update/category";
 
-const createCategory = async (category) => {
+const createCategory = async (formData) => {
   try {
     const response = await fetch(apiUrl, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(category),
+      body: formData,
     });
     if (!response.ok) {
       throw new Error("Error creating category");
@@ -22,18 +21,20 @@ const createCategory = async (category) => {
   }
 };
 
-const updateCategory = async (category) => {
+const updateCategory = async (formData, uuid) => {
   try {
-    const response = await fetch(`${apiUrl}/${category.id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(category),
+    // Append the 'uuid' field to your formData
+    formData.append("uuid", uuid);
+
+    const response = await fetch(`${categoryUpdate}`, {
+      method: "PUT", // Use PUT to update the resource
+      body: formData,
     });
+
     if (!response.ok) {
       throw new Error("Error updating category");
     }
+
     const data = await response.json();
     return data;
   } catch (error) {
@@ -44,12 +45,9 @@ const updateCategory = async (category) => {
 
 const deleteCategory = async (categoryId) => {
   try {
-    const response = await fetch(
-      `http://192.168.77.91:9000/admin/category/delete/${categoryId}`,
-      {
-        method: "DELETE",
-      }
-    );
+    const response = await fetch(`${categoryDelete}${categoryId}`, {
+      method: "DELETE",
+    });
     if (!response.ok) {
       throw new Error("Error deleting category");
     }
@@ -62,21 +60,24 @@ const deleteCategory = async (categoryId) => {
 
 function PostGetDeleteCategory() {
   const [categoryData, setCategoryData] = useState({
-    categoryName: "",
+    name: "",
   });
+
+  const [imageFile, setImageFile] = useState(null);
 
   const [categorys, setCategorys] = useState([]);
 
-  const [editablecategoryData, setEditablecategoryData] = useState({
+  const [editableCategoryData, setEditableCategoryData] = useState({
     isEdit: false,
     categoryIndex: null,
   });
+
+  const [operationSuccess, setOperationSuccess] = useState(null); // Состояние для уведомления
 
   useEffect(() => {
     fetch("http://192.168.77.91:9000/admin/categories")
       .then((response) => response.json())
       .then((responseData) => {
-        // Проверяем, что ответ содержит данные и устанавливаем их в состояние
         if (responseData && responseData.data) {
           setCategorys(responseData.data);
         } else {
@@ -86,97 +87,194 @@ function PostGetDeleteCategory() {
       .catch((error) => console.error(error));
   }, []);
 
-  useEffect(() => {
-    // Fetch categories when the component mounts
-    fetchCategories();
-  }, []); // Empty dependency array to fetch data once on component mount
+  const isFilledFields = categoryData.name;
 
-  const fetchCategories = async () => {
-    try {
-      const response = await fetch(apiUrl);
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-      const data = await response.json();
-      setCategorys(data); // Set the fetched categories in the state
-    } catch (error) {
-      console.error("Error fetching categories:", error);
-    }
-  };
-
-  const handleRemoveClick = async (index) => {
-    try {
-      const categoryId = categorys[index].uuid;
-      if (!categoryId) {
-        console.error("Category ID is undefined or null.");
-        return;
-      }
-      await deleteCategory(categoryId);
-
-      setCategorys((prevCategorys) =>
-        prevCategorys.filter((_, categoryIndex) => categoryIndex !== index)
-      );
-    } catch (error) {
-      console.error("Error removing category:", error);
-    }
-  };
-
-  const isFilledFields = categoryData.categoryName;
-
-  const handleSubmitcategory = async (e) => {
+  const handleSubmitCategory = async (e) => {
     e.preventDefault();
     if (!isFilledFields) {
       console.error("Please fill in all fields.");
       return;
     }
 
-    if (editablecategoryData.isEdit) {
+    const formData = new FormData();
+    formData.append("name", categoryData.name);
+    if (imageFile) {
+      formData.append("image", imageFile);
+    }
+
+    if (editableCategoryData.isEdit) {
       try {
-        const updatedCategory = await updateCategory({
-          id: categorys[editablecategoryData.categoryIndex].id,
-          ...categoryData,
-        });
-        setCategorys((prevCategorys) => {
-          const newCategorys = [...prevCategorys];
-          newCategorys[editablecategoryData.categoryIndex] = updatedCategory;
-          return newCategorys;
-        });
-        setEditablecategoryData({
+        const updatedCategory = await updateCategory(
+          formData,
+          editableCategoryData.categoryIndex
+        );
+
+        setCategorys((prevCategories) =>
+          prevCategories.map((category) =>
+            category.uuid === editableCategoryData.categoryIndex
+              ? updatedCategory
+              : category
+          )
+        );
+
+        setEditableCategoryData({
           isEdit: false,
           categoryIndex: null,
         });
+
         setCategoryData({
-          categoryName: "",
+          name: "",
         });
+
+        setImageFile(null);
+
+        setOperationSuccess("Updated successfully");
       } catch (error) {
         console.error("Error updating category:", error);
+        setOperationSuccess("Update failed");
       }
     } else {
       try {
-        const createdCategory = await createCategory(categoryData);
-        setCategorys((prevCategorys) => [...prevCategorys, createdCategory]);
+        const createdCategory = await createCategory(formData);
+        setCategorys((prevCategories) => [...prevCategories, createdCategory]);
         setCategoryData({
-          categoryName: "",
+          name: "",
         });
+        setImageFile(null);
+
+        setOperationSuccess("Created successfully");
       } catch (error) {
         console.error("Error creating category:", error);
+        setOperationSuccess("Creation failed");
+      }
+    }
+
+    setTimeout(() => {
+      setOperationSuccess(null);
+    }, 5000);
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    setImageFile(file);
+  };
+
+  const handleCleanClick = (data, uuid) => {
+    setCategoryData(data);
+    setEditableCategoryData({
+      isEdit: true,
+      categoryIndex: uuid,
+    });
+  };
+  // const handleEditClick = async (uuid) => {
+  //   try {
+  //     // Выполните GET-запрос, чтобы получить данные о категории по uuid
+  //     const response = await fetch(
+  //       `http://192.168.77.91:9000/admin/category/${uuid}`
+  //     );
+  //     if (!response.ok) {
+  //       throw new Error("Error fetching category for editing");
+  //     }
+  //     const categoryData = await response.json();
+
+  //     // Установите полученные данные в состояния categoryData и editableCategoryData
+  //     setCategoryData({
+  //       name: categoryData.data.categoryName,
+  //     });
+
+  //     setEditableCategoryData({
+  //       isEdit: true,
+  //       categoryIndex: uuid,
+  //     });
+  //   } catch (error) {
+  //     console.error("Error fetching category for editing:", error);
+  //   }
+  // };
+
+  const handleEditClick = async (uuid) => {
+    try {
+      // Execute a GET request to fetch category data by uuid
+      const response = await fetch(
+        `http://192.168.77.91:9000/admin/category/${uuid}`
+      );
+      if (!response.ok) {
+        throw new Error("Error fetching category for editing");
+      }
+      const categoryData = await response.json();
+
+      // Set the received data into categoryData and editableCategoryData states
+      setCategoryData({
+        name: categoryData.data.categoryName,
+      });
+
+      setEditableCategoryData({
+        isEdit: true,
+        categoryIndex: uuid,
+      });
+    } catch (error) {
+      console.error("Error fetching category for editing:", error);
+    }
+  };
+
+  const handleRemoveClick = async (categoryId) => {
+    if (window.confirm("Are you sure you want to delete this category?")) {
+      try {
+        await deleteCategory(categoryId);
+        setCategorys((prevCategories) =>
+          prevCategories.filter((_, categoryId) => categoryId !== categoryId)
+        );
+        setOperationSuccess("Category deleted successfully");
+      } catch (error) {
+        console.error("Error deleting category:", error);
+        setOperationSuccess("Error deleting category");
       }
     }
   };
 
-  const handleCleanClick = () => setCategoryData({ categoryName: "" });
-
-  console.log(categorys);
-
   return (
-    <div className="wrapper">
+    <div className="wrapper" style={{ marginTop: "2rem" }}>
       <div className="wrapper-content">
+        <div>
+          <form onSubmit={handleSubmitCategory} onReset={handleCleanClick}>
+            <input
+              type="text"
+              placeholder="Enter category name"
+              value={categoryData.name}
+              onChange={(e) =>
+                setCategoryData({
+                  name: e.target.value,
+                })
+              }
+            />
+            <input type="file" accept="image/*" onChange={handleImageChange} />
+            <div className="buttons-wrapper">
+              <button type="reset">
+                {editableCategoryData.isEdit ? "Cancel" : "Clean"}
+              </button>
+              <button type="submit" disabled={!isFilledFields}>
+                {editableCategoryData.isEdit ? "Edit" : "Add"}
+              </button>
+            </div>
+          </form>
+          {operationSuccess && (
+            <div
+              className={`alert ${
+                operationSuccess.includes("successfully")
+                  ? "alert-success"
+                  : "alert-danger"
+              }`}
+            >
+              {operationSuccess}
+            </div>
+          )}
+        </div>
         <div>
           <table>
             <thead>
               <tr>
-                <th>id</th>
+                <th>Id</th>
                 <th>Category Name</th>
+                <th>Category Image</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -186,7 +284,22 @@ function PostGetDeleteCategory() {
                   <td>{index + 1}</td>
                   <td>{category.categoryName}</td>
                   <td>
-                    <button onClick={() => handleRemoveClick(index)}>
+                    {category.image && (
+                      <img
+                        src={`http://192.168.77.91:9000/images/categories/${category.image}`}
+                        alt={category.categoryName}
+                        style={{ height: "100px" }}
+                      />
+                    )}
+                  </td>
+                  <td>
+                    <button
+                      // type="submit"
+                      onClick={() => handleEditClick(category.uuid)}
+                    >
+                      Edit
+                    </button>
+                    <button onClick={() => handleRemoveClick(category.uuid)}>
                       Remove
                     </button>
                   </td>
@@ -194,28 +307,6 @@ function PostGetDeleteCategory() {
               ))}
             </tbody>
           </table>
-        </div>
-        <div>
-          <form onSubmit={handleSubmitcategory} onReset={handleCleanClick}>
-            <input
-              type="text"
-              placeholder="Enter category name"
-              value={categoryData.categoryName}
-              onChange={(e) =>
-                setCategoryData({
-                  categoryName: e.target.value,
-                })
-              }
-            />
-            <div className="buttons-wrapper">
-              <button type="reset">
-                {editablecategoryData.isEdit ? "Cancel" : "Clean"}
-              </button>
-              <button type="submit" disabled={!isFilledFields}>
-                {editablecategoryData.isEdit ? "Edit" : "Add"}
-              </button>
-            </div>
-          </form>
         </div>
       </div>
     </div>
