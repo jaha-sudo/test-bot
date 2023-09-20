@@ -6,12 +6,10 @@ function Footer() {
   return (
     <Box
       sx={{
-        backgroundColor: "#f5f5f5", // Цвет фона
-        padding: "1rem", // Внутренний отступ
+        backgroundColor: "#f5f5f5",
+        mt:'2rem', 
+        padding: "1rem", 
         textAlign: "center",
-        position: "fixed", // Зафиксированная позиция
-        bottom: 0, // Прижат к нижней грани
-        width: "100%", // Занимает всю ширину // Выравнивание текста по центру
       }}
     >
       <Typography variant="body2" color="textSecondary">

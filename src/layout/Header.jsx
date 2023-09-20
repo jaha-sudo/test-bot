@@ -19,9 +19,8 @@ function Header() {
     { href: "get-products", linkName: "Get Product" },
     { href: "post-get-products", linkName: "Post/get/delete product" },
   ];
-
   return (
-    <Drawer variant="permanent">
+    <Drawer variant="permanent" sx={{ paddingRight: "300px" }}>
       <List>
         {links.map((link, index) => (
           <ListItem button key={index} component={Link} to={link.href}>

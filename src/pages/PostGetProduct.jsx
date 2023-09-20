@@ -1,4 +1,20 @@
-import { Container } from "@mui/material";
+import {
+  Button,
+  FormControl,
+  Grid,
+  InputLabel,
+  MenuItem,
+  Paper,
+  Select,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  TextField,
+  Typography,
+} from "@mui/material";
+import { Box } from "@mui/system";
 import { useState, useEffect } from "react";
 
 const productsApiUrl =
@@ -157,97 +173,180 @@ function PostGetProducts() {
   };
 
   return (
-    <Container>
-      <div className="wrapper">
-        <div className="wrapper-content">
-          <div>
+    <Box sx={{ marginLeft: "15rem", mt: "2rem", mr: "2rem" }}>
+      <Grid container spacing={2}>
+        <Grid item xs={12}>
+          <Paper elevation={3} style={{ padding: "20px" }}>
+            <Typography variant="h5" gutterBottom>
+              Создать продукт
+            </Typography>
             <form onSubmit={handleSubmit}>
-              <label>
-                Категория:
-                <select
-                  name="category_id"
-                  value={productData.category_id}
-                  onChange={handleInputChange}
+              <Box
+                display="flex"
+                flexDirection="row"
+                flexWrap="wrap"
+                alignItems="center"
+              >
+                <FormControl
+                  margin="normal"
+                  style={{ marginRight: "16px", flex: 1 }}
                 >
-                  <option value="">Выберите категорию</option>
-                  {categories.map((category) => (
-                    <option key={category.uuid} value={category.uuid}>
-                      {category.categoryName}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <label>
-                Название продукта:
-                <input
+                  <InputLabel>Категория</InputLabel>
+                  <Select
+                    name="category_id"
+                    value={productData.category_id}
+                    label="Age"
+                    onChange={handleInputChange}
+                    sx={{ height: "60px" }}
+                  >
+                    <MenuItem value="">
+                      <em>Выберите категорию</em>
+                    </MenuItem>
+                    {categories.map((category) => (
+                      <MenuItem key={category.uuid} value={category.uuid}>
+                        {category.categoryName}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+                <TextField
+                  sx={{ height: "60px" }}
+                  fullWidth
+                  margin="normal"
+                  label="Название продукта"
                   type="text"
                   name="name"
                   value={productData.name}
                   onChange={handleInputChange}
+                  style={{ marginRight: "16px", flex: 1 }}
                 />
-              </label>
-              <label>
-                Цена:
-                <input
-                  type="text"
+                <TextField
+                  sx={{ height: "60px" }}
+                  fullWidth
+                  margin="normal"
+                  label="Цена"
+                  type="number"
                   name="price"
                   value={productData.price}
                   onChange={handleInputChange}
+                  style={{ marginRight: "16px", flex: 1 }}
                 />
-              </label>
-              <label>
-                Изображение:
-                <input type="file" name="image" onChange={handleInputChange} />
-              </label>
-              <button type="submit">Создать продукт</button>
-            </form>
-          </div>
-        </div>
-      </div>
-      <h2 style={{ marginLeft: "20%", marginTop: "2rem" }}>Список продуктов</h2>
-      <table style={{ marginLeft: "20%" }}>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Category Image</th>
-            <th>Category Name</th>
-            <th>Название продукта</th>
-            <th>Цена</th>
-            <th>Изображение</th>
-            <th>Действия</th>
-          </tr>
-        </thead>
-        <tbody>
-          {products.map((product, index) => (
-            <tr key={product.id}>
-              <td>{index + 1}</td>
-              <td>
-                <img
-                  src={`http://192.168.77.91:9000/images/categories/${product.image_categ}`}
-                  height={100}
-                  alt={product.category_name}
+                <input
+                  accept="image/*"
+                  style={{ display: "none" }}
+                  id="image"
+                  type="file"
+                  name="image"
+                  onChange={handleInputChange}
                 />
-              </td>
+                <label
+                  htmlFor="image"
+                  style={{ marginRight: "16px", flex: 1, marginTop: "8px" }}
+                >
+                  <Button
+                    variant="outlined"
+                    component="span"
+                    fullWidth
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      height: "60px",
+                    }}
+                  >
+                    Загрузить изображение
+                  </Button>
+                </label>
+              </Box>
+              {productData.image && (
+                <Typography variant="body2">
+                  Изображение выбрано: {productData.image.name}
+                </Typography>
+              )}
 
-              <td>{product.category_name}</td>
-              <td>{product.name}</td>
-              <td>{product.price}</td>
-              <td>
-                {product.image && (
-                  <img src={product.image} alt={product.name} height={100} />
-                )}
-              </td>
-              <td>
-                <button onClick={() => editProduct(product.id)}>Edit</button>
-                <button onClick={() => deleteProduct(product.id)}>
-                  Удалить
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </Container>
+              <Box display="flex" justifyContent="center">
+                <Button
+                  sx={{ width: "30%" }}
+                  variant="contained"
+                  color="primary"
+                  type="submit"
+                >
+                  Создать продукт
+                </Button>
+              </Box>
+            </form>
+          </Paper>
+        </Grid>
+        <Grid item xs={12}>
+          <Table>
+            <TableHead >
+              <TableRow >
+                {[
+                  "ID",
+                  "Category Image",
+                  "Category Name",
+                  "Название продукта",
+                  "Цена",
+                  "Изображение",
+                  "Действия",
+                ].map((headerText, index) => (
+                  <TableCell sx={{bgcolor:'#f5f5f5'}} key={index}>{headerText}</TableCell>
+                ))}
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {products.map((product, index) => (
+                <TableRow key={product.id}>
+                  <TableCell>{index + 1}</TableCell>
+                  <TableCell>
+                    <img
+                      src={`http://192.168.77.91:9000/images/categories/${product.image_categ}`}
+                      height={100}
+                      alt={product.category_name}
+                    />
+                  </TableCell>
+                  <TableCell>{product.category_name}</TableCell>
+                  <TableCell>{product.name}</TableCell>
+                  <TableCell>{product.price}</TableCell>
+                  <TableCell>
+                    {product.image && (
+                      <img
+                        src={product.image}
+                        alt={product.name}
+                        height={100}
+                      />
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    <Grid container spacing={1}>
+                      <Grid item xs={6}>
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          fullWidth
+                          onClick={() => editProduct(product.id)}
+                        >
+                          Edit
+                        </Button>
+                      </Grid>
+                      <Grid item xs={6}>
+                        <Button
+                          variant="contained"
+                          color="secondary"
+                          fullWidth
+                          onClick={() => deleteProduct(product.id)}
+                        >
+                          Удалить
+                        </Button>
+                      </Grid>
+                    </Grid>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </Grid>
+      </Grid>
+    </Box>
   );
 }
 
