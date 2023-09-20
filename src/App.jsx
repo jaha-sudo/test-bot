@@ -10,6 +10,7 @@ import ProductTable from "./pages/ProductTable";
 import PostGetProduct from "./pages/PostGetProduct";
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import theme from "./theme";
+import OrdersTable from "./pages/OrdersTable";
 
 function App() {
   return (
@@ -29,6 +30,8 @@ function App() {
             <Route path="post-products" element={<AddProducts />} />
             <Route path="get-products" element={<ProductTable />} />
             <Route path="post-get-products" element={<PostGetProduct />} />
+            <Route path="orders-table" element={<OrdersTable />} />
+
           </Route>
         </Routes>
       </BrowserRouter>

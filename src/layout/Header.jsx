@@ -18,6 +18,8 @@ function Header() {
     { href: "post-products", linkName: "Add Product" },
     { href: "get-products", linkName: "Get Product" },
     { href: "post-get-products", linkName: "Post/get/delete product" },
+    { href: "orders-table", linkName: "Orders" },
+
   ];
   return (
     <Drawer variant="permanent" sx={{ paddingRight: "300px" }}>
