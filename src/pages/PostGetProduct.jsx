@@ -5,7 +5,7 @@ const productsApiUrl =
   "http://192.168.77.91:9000/admin/products?limit=100&offset=0";
 const apiUrl = "http://192.168.77.91:9000/admin/create/product";
 const categoriesApiUrl = "http://192.168.77.91:9000/admin/categories";
-const imageBaseUrl = "http://192.168.77.91:9000/images/";
+const imageBaseUrl = "http://192.168.77.91:9000/images/products/";
 const deleteProductBaseUrl = "http://192.168.77.91:9000/admin/product/delete/";
 
 function PostGetProducts() {
@@ -136,6 +136,26 @@ function PostGetProducts() {
     createProduct(productData);
   };
 
+  const editProduct = async (productId) => {
+    try {
+      const response = await fetch(
+        `http://192.168.77.91:9000/admin/product/${productId}`
+      );
+      if (!response.ok) {
+        throw new Error("Error fetching product for editing");
+      }
+      const productData = await response.json();
+      setProductData({
+        category_id: productData.data.category_id,
+        name: productData.data.name,
+        price: productData.data.Price,
+        image: productData.data.image,
+      });
+    } catch (error) {
+      console.error("Error fetching product for editing:", error);
+    }
+  };
+
   return (
     <Container>
       <div className="wrapper">
@@ -184,11 +204,12 @@ function PostGetProducts() {
           </div>
         </div>
       </div>
-      <h2 style={{ marginLeft: "20%", marginTop:'2rem' }}>Список продуктов</h2>
+      <h2 style={{ marginLeft: "20%", marginTop: "2rem" }}>Список продуктов</h2>
       <table style={{ marginLeft: "20%" }}>
         <thead>
           <tr>
             <th>ID</th>
+            <th>Category Image</th>
             <th>Category Name</th>
             <th>Название продукта</th>
             <th>Цена</th>
@@ -200,7 +221,15 @@ function PostGetProducts() {
           {products.map((product, index) => (
             <tr key={product.id}>
               <td>{index + 1}</td>
-              <td>Here will be category&apos;s name</td>
+              <td>
+                <img
+                  src={`http://192.168.77.91:9000/images/categories/${product.image_categ}`}
+                  height={100}
+                  alt={product.category_name}
+                />
+              </td>
+
+              <td>{product.category_name}</td>
               <td>{product.name}</td>
               <td>{product.price}</td>
               <td>
@@ -209,6 +238,7 @@ function PostGetProducts() {
                 )}
               </td>
               <td>
+                <button onClick={() => editProduct(product.id)}>Edit</button>
                 <button onClick={() => deleteProduct(product.id)}>
                   Удалить
                 </button>

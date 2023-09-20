@@ -166,34 +166,9 @@ function PostGetDeleteCategory() {
       categoryIndex: uuid,
     });
   };
-  // const handleEditClick = async (uuid) => {
-  //   try {
-  //     // Выполните GET-запрос, чтобы получить данные о категории по uuid
-  //     const response = await fetch(
-  //       `http://192.168.77.91:9000/admin/category/${uuid}`
-  //     );
-  //     if (!response.ok) {
-  //       throw new Error("Error fetching category for editing");
-  //     }
-  //     const categoryData = await response.json();
-
-  //     // Установите полученные данные в состояния categoryData и editableCategoryData
-  //     setCategoryData({
-  //       name: categoryData.data.categoryName,
-  //     });
-
-  //     setEditableCategoryData({
-  //       isEdit: true,
-  //       categoryIndex: uuid,
-  //     });
-  //   } catch (error) {
-  //     console.error("Error fetching category for editing:", error);
-  //   }
-  // };
 
   const handleEditClick = async (uuid) => {
     try {
-      // Execute a GET request to fetch category data by uuid
       const response = await fetch(
         `http://192.168.77.91:9000/admin/category/${uuid}`
       );
@@ -202,7 +177,6 @@ function PostGetDeleteCategory() {
       }
       const categoryData = await response.json();
 
-      // Set the received data into categoryData and editableCategoryData states
       setCategoryData({
         name: categoryData.data.categoryName,
       });
@@ -252,7 +226,7 @@ function PostGetDeleteCategory() {
                 {editableCategoryData.isEdit ? "Cancel" : "Clean"}
               </button>
               <button type="submit" disabled={!isFilledFields}>
-                {editableCategoryData.isEdit ? "Edit" : "Add"}
+                {editableCategoryData.isEdit ? "Update" : "Add"}
               </button>
             </div>
           </form>
