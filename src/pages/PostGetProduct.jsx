@@ -1,4 +1,5 @@
 import {
+  Box,
   Button,
   FormControl,
   Grid,
@@ -13,16 +14,16 @@ import {
   TableRow,
   TextField,
   Typography,
+  Pagination,
 } from "@mui/material";
-import { Box } from "@mui/system";
 import { useState, useEffect } from "react";
 
-const productsApiUrl =
+const getProductsApi =
   "http://192.168.77.91:9000/admin/products?limit=100&offset=0";
-const apiUrl = "http://192.168.77.91:9000/admin/create/product";
-const categoriesApiUrl = "http://192.168.77.91:9000/admin/categories";
-const imageBaseUrl = "http://192.168.77.91:9000/images/products/";
-const deleteProductBaseUrl = "http://192.168.77.91:9000/admin/product/delete/";
+const createProductApi = "http://192.168.77.91:9000/admin/create/product";
+const getCategoriesApi = "http://192.168.77.91:9000/admin/categories";
+const getProductsImgApi = "http://192.168.77.91:9000/images/products/";
+const deleteProductApi = "http://192.168.77.91:9000/admin/product/delete/";
 
 function PostGetProducts() {
   const [products, setProducts] = useState([]);
@@ -41,7 +42,7 @@ function PostGetProducts() {
 
   const fetchProducts = async () => {
     try {
-      const response = await fetch(productsApiUrl);
+      const response = await fetch(getProductsApi);
       if (!response.ok) {
         throw new Error("Ошибка получения списка продуктов");
       }
@@ -50,7 +51,7 @@ function PostGetProducts() {
       const productsWithUpdatedImageUrls = data.data.products.map(
         (product) => ({
           ...product,
-          image: imageBaseUrl + product.image,
+          image: getProductsImgApi + product.image,
         })
       );
 
@@ -61,7 +62,7 @@ function PostGetProducts() {
   };
 
   const fetchCategories = () => {
-    fetch(categoriesApiUrl)
+    fetch(getCategoriesApi)
       .then((response) => response.json())
       .then((responseData) => {
         if (responseData && responseData.data) {
@@ -97,7 +98,7 @@ function PostGetProducts() {
       formData.append("price", productData.price);
       formData.append("image", productData.image);
 
-      const response = await fetch(apiUrl, {
+      const response = await fetch(createProductApi, {
         method: "POST",
         body: formData,
       });
@@ -123,7 +124,7 @@ function PostGetProducts() {
 
   const deleteProduct = async (productId) => {
     try {
-      const response = await fetch(deleteProductBaseUrl + productId, {
+      const response = await fetch(deleteProductApi + productId, {
         method: "DELETE",
       });
 
@@ -171,6 +172,18 @@ function PostGetProducts() {
       console.error("Error fetching product for editing:", error);
     }
   };
+
+  const [page, setPage] = useState(1);
+  const perPage = 5;
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const pageCount = Math.ceil(products.length / perPage);
+
+  const startIndex = (page - 1) * perPage;
+  const endIndex = page * perPage;
 
   return (
     <Box sx={{ marginLeft: "15rem", mt: "2rem", mr: "2rem" }}>
@@ -278,8 +291,8 @@ function PostGetProducts() {
         </Grid>
         <Grid item xs={12}>
           <Table>
-            <TableHead >
-              <TableRow >
+            <TableHead>
+              <TableRow>
                 {[
                   "ID",
                   "Category Image",
@@ -289,14 +302,16 @@ function PostGetProducts() {
                   "Изображение",
                   "Действия",
                 ].map((headerText, index) => (
-                  <TableCell sx={{bgcolor:'#f5f5f5'}} key={index}>{headerText}</TableCell>
+                  <TableCell sx={{ bgcolor: "#f5f5f5" }} key={index}>
+                    {headerText}
+                  </TableCell>
                 ))}
               </TableRow>
             </TableHead>
             <TableBody>
-              {products.map((product, index) => (
+              {products.slice(startIndex, endIndex).map((product, index) => (
                 <TableRow key={product.id}>
-                  <TableCell>{index + 1}</TableCell>
+                  <TableCell>{startIndex + index + 1}</TableCell>
                   <TableCell>
                     <img
                       src={`http://192.168.77.91:9000/images/categories/${product.image_categ}`}
@@ -344,6 +359,25 @@ function PostGetProducts() {
               ))}
             </TableBody>
           </Table>
+          <Grid item xs={12}>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                mt: 2,
+              }}
+            >
+              <Pagination
+                count={pageCount}
+                page={page}
+                onChange={handleChangePage}
+                siblingCount={0} // Вот здесь устанавливаем siblingCount в 0, чтобы отображать только одну страницу справа и слева
+                color="primary"
+                showFirstButton={true}
+                showLastButton={true}
+              />
+            </Box>
+          </Grid>
         </Grid>
       </Grid>
     </Box>
